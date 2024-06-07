@@ -4,7 +4,6 @@ const Brand = db.Brand;
 const Influencer = db.Influencer;
 const Campaign = db.Campaign;
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 
 exports.getBrands = async (req, res) => {
     try {
