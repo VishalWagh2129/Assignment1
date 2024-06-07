@@ -8,6 +8,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/api', userRoutes);
 
+console.log('Database connection parameters:', {
+  host: process.env.DB_HOST,
+  username: process.env.DB_USER,
+  database: process.env.DB_NAME
+});
+
 db.sequelize.authenticate()
   .then(() => {
     console.log('Database connected successfully.');
