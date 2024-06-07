@@ -1,9 +1,6 @@
 const db = require('../models');
-const User = db.User;
 const Brand = db.Brand;
 const Influencer = db.Influencer;
-const Campaign = db.Campaign;
-const jwt = require('jsonwebtoken');
 
 exports.getBrands = async (req, res) => {
     try {
