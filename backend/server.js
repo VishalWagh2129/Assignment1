@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const db = require('./config/database');
+const sequelize = require('./config/database');
 const userRoutes = require('./routes/routes');
 const cors = require('cors'); 
 const app = express();
@@ -10,7 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/api', userRoutes);
 
-db.sequelize.authenticate()
+sequelize.authenticate()
   .then(() => {
     console.log('Database connected successfully.');
     return db.sequelize.sync();
