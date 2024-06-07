@@ -4,7 +4,25 @@ const Brand = db.Brand;
 const Influencer = db.Influencer;
 const Campaign = db.Campaign;
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const crytpo = require('crytpo');
+
+const pbkdf2 = promisify(crypto.pbkdf2);
+const randomBytes = promisify(crypto.randomBytes);
+
+// Helper function to hash passwords
+async function hashPassword(password) {
+  const salt = await randomBytes(16).toString('hex');
+  const hashedPassword = (await pbkdf2(password, salt, 1000, 64, 'sha512')).toString('hex');
+  return `${salt}:${hashedPassword}`;
+}
+
+// Helper function to compare passwords
+async function comparePassword(storedPassword, password) {
+  const [salt, key] = storedPassword.split(':');
+  const hashedBuffer = (await pbkdf2(password, salt, 1000, 64, 'sha512')).toString('hex');
+  return key === hashedBuffer;
+}
+
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -13,7 +31,7 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(200).json({ success: false, data: null, message: 'Invalid email or password' });
     }
-    const passwordMatch = await bcrypt.compare(password, user.Password);
+    const passwordMatch = await comparePassword(user.Password, password);
     if (!passwordMatch) {
       return res.status(200).json({ success: false, data: null, message: 'Invalid email or password' });
     }
@@ -29,7 +47,7 @@ exports.login = async (req, res) => {
 exports.signup = async (req, res) => {
   try {
     const { username, mobile, email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
     const newUser = await User.create({
       UserName: username,
       Mobile: mobile,
