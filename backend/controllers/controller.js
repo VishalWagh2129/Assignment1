@@ -4,7 +4,7 @@ const Brand = db.Brand;
 const Influencer = db.Influencer;
 const Campaign = db.Campaign;
 const jwt = require('jsonwebtoken');
-const argon2 = require('argon2');
+const bcrypt = require('bcrypt');
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(200).json({ success: false, data: null, message: 'Invalid email or password' });
     }
-    const passwordMatch = await argon2.compare(password, user.Password);
+    const passwordMatch = await bcrypt.compare(password, user.Password);
     if (!passwordMatch) {
       return res.status(200).json({ success: false, data: null, message: 'Invalid email or password' });
     }
@@ -29,7 +29,7 @@ exports.login = async (req, res) => {
 exports.signup = async (req, res) => {
   try {
     const { username, mobile, email, password } = req.body;
-    const hashedPassword = await argon2.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
       UserName: username,
       Mobile: mobile,
